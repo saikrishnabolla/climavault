@@ -160,8 +160,8 @@ export default function Dashboard() {
     return (
         <div className="min-h-screen bg-[#F5F7FA] text-[#1D1D1F] font-inter overflow-x-hidden">
             {/* 1. Integrated Page Header (Samsung Style Wide Header) */}
-            <header className="pt-24 pb-12 px-8 max-w-[1400px] mx-auto transition-all animate-fade-in relative">
-                <div className="flex justify-between items-start">
+            <header className="pt-12 pb-6 lg:pt-24 lg:pb-12 px-4 lg:px-8 max-w-[1400px] mx-auto transition-all animate-fade-in relative">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                     <div className="space-y-4">
                         <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 min-h-[28px]">
                             <div className="flex items-center gap-2">
@@ -177,10 +177,10 @@ export default function Dashboard() {
                                 </motion.div>
                             )}
                         </div>
-                        <h1 className="text-5xl lg:text-8xl font-bold tracking-tighter">
+                        <h1 className="text-4xl lg:text-8xl font-bold tracking-tighter">
                             {location.split(',')[0]} <span className="text-gray-400 font-normal">Vault</span>
                         </h1>
-                        <p className="text-xl text-gray-500 font-medium max-w-2xl">
+                        <p className="text-lg lg:text-xl text-gray-500 font-medium max-w-2xl">
                             {format(startDate, "MMM d, yyyy")} — {format(endDate, "MMM d, yyyy")}
                         </p>
                     </div>
@@ -188,7 +188,7 @@ export default function Dashboard() {
                         variant="ghost"
                         size="sm"
                         onClick={() => window.location.reload()}
-                        className="rounded-full hover:bg-gray-100 text-gray-400 font-black uppercase tracking-widest text-[10px]"
+                        className="rounded-full hover:bg-gray-100 text-gray-400 font-black uppercase tracking-widest text-[10px] self-start lg:self-center"
                     >
                         <Undo2 className="h-4 w-4 mr-2" /> Reset Session
                     </Button>
@@ -215,7 +215,7 @@ export default function Dashboard() {
             </header >
 
             {/* 3. Primary Control Strip (Horizontal) */}
-            < div className="px-8 max-w-[1400px] mx-auto mb-12" >
+            < div className="px-4 lg:px-8 max-w-[1400px] mx-auto mb-8 lg:mb-12" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -373,17 +373,20 @@ export default function Dashboard() {
             </div >
 
             {/* 4. Visualization & Metrics Workspace */}
-            < main className="px-8 max-w-[1400px] mx-auto pb-24" >
+            < main className="px-4 lg:px-8 max-w-[1400px] mx-auto pb-24" >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {/* Summary Mini Cards */}
                     {[
-                        { icon: TrendingUp, label: "Latitude", val: coordinates.lat.toFixed(4), color: "blue" },
-                        { icon: Globe, label: "Longitude", val: coordinates.lon.toFixed(4), color: "purple" },
-                        { icon: LayoutGrid, label: "Resolution", val: "11km Grid", color: "green" },
-                        { icon: HistoryIcon, label: "Timeline", val: dataType.toUpperCase(), color: "orange" },
+                        { icon: TrendingUp, label: "Latitude", val: coordinates.lat.toFixed(4), color: "#3B82F6", bg: "#EFF6FF" },
+                        { icon: Globe, label: "Longitude", val: coordinates.lon.toFixed(4), color: "#A855F7", bg: "#FAF5FF" },
+                        { icon: LayoutGrid, label: "Resolution", val: "11km Grid", color: "#22C55E", bg: "#F0FDF4" },
+                        { icon: HistoryIcon, label: "Timeline", val: dataType.toUpperCase(), color: "#F97316", bg: "#FFF7ED" },
                     ].map((item, i) => (
                         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} key={item.label} className="bg-white p-5 rounded-[2rem] border border-gray-100 flex items-center gap-4">
-                            <div className={`w-12 h-12 bg-${item.color}-50 text-${item.color}-500 rounded-2xl flex items-center justify-center shadow-inner`}>
+                            <div
+                                className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner"
+                                style={{ backgroundColor: item.bg, color: item.color }}
+                            >
                                 <item.icon className="h-6 w-6" />
                             </div>
                             <div>
@@ -434,7 +437,7 @@ export default function Dashboard() {
                                 {/* The actual Data Card */}
                                 <motion.div layout className="bg-white rounded-[2.5rem] p-6 one-ui-shadow border border-gray-50 flex flex-col relative overflow-hidden flex-1">
                                     {activeTab === 'chart' ? (
-                                        <div className="w-full h-[400px] lg:h-full">
+                                        <div className="w-full h-[300px] md:h-[400px] lg:h-full">
                                             <WeatherChart data={weatherData} variables={selectedVariables} isLoading={false} />
                                         </div>
                                     ) : (
@@ -534,7 +537,7 @@ export default function Dashboard() {
                 </div>
             </main >
 
-            <footer className="fixed bottom-8 left-8 z-40">
+            <footer className="fixed bottom-4 left-4 lg:bottom-8 lg:left-8 z-40">
                 <Popover>
                     <PopoverTrigger asChild>
                         <motion.button

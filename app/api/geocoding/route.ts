@@ -3,6 +3,22 @@ import { type NextRequest, NextResponse } from "next/server"
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
+
+    // Security: Prevent direct API access/abuse from external sources
+    const referer = request.headers.get("referer")
+    const origin = request.headers.get("origin")
+    const host = request.headers.get("host")
+
+    const isSameOrigin =
+      (referer && host && referer.includes(host)) ||
+      (origin && host && origin.includes(host))
+
+    if (!isSameOrigin) {
+      if (process.env.NODE_ENV === 'production' || (!referer && !origin)) {
+        return NextResponse.json({ error: "Unauthorized access: Request must originate from the website." }, { status: 403 })
+      }
+    }
+
     const name = searchParams.get("name")
 
     if (!name) {

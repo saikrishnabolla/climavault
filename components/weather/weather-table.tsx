@@ -47,13 +47,13 @@ export default function WeatherTable({ data, variables }: WeatherTableProps) {
 
     return (
         <div className="rounded-[2rem] overflow-hidden bg-card/50">
-            <ScrollArea className="h-[550px]">
+            <ScrollArea className="h-[400px] lg:h-[550px]">
                 <Table>
                     <TableHeader className="sticky top-0 bg-card z-10">
                         <TableRow className="border-b-secondary hover:bg-transparent">
                             <TableHead className="w-48 font-bold text-foreground h-14">Timestamp</TableHead>
                             {variables.map((variable) => (
-                                <TableHead key={variable} className="font-bold text-foreground">
+                                <TableHead key={variable} className="font-bold text-foreground whitespace-nowrap">
                                     {variable.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                                     {units[variable] && (
                                         <span className="ml-1 text-[10px] text-muted-foreground font-normal">
@@ -71,7 +71,7 @@ export default function WeatherTable({ data, variables }: WeatherTableProps) {
                                     {formatTime(time)}
                                 </TableCell>
                                 {variables.map((variable) => (
-                                    <TableCell key={`${time}-${variable}`} className="text-sm">
+                                    <TableCell key={`${time}-${variable}`} className="text-sm whitespace-nowrap">
                                         {dataSource[variable] ? (
                                             <span className="font-medium">{dataSource[variable][index]}</span>
                                         ) : (
