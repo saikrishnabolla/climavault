@@ -1,0 +1,12 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="#0078FF"/>
+  
+  <!-- Center Core (Data Point) -->
+  <circle cx="256" cy="256" r="48" fill="white"/>
+  
+  <!-- Middle Signal Ring -->
+  <path d="M336 176C357.333 197.333 370 225.333 370 256C370 286.667 357.333 314.667 336 336" stroke="white" stroke-opacity="0.5" stroke-width="32" stroke-linecap="round"/>
+  
+  <!-- Outer C Ring (Vault Wall) -->
+  <path d="M384 128C351.6 95.6 306.4 76 256 76C156.589 76 76 156.589 76 256C76 355.411 156.589 436 256 436C306.4 436 351.6 416.4 384 384" stroke="white" stroke-width="48" stroke-linecap="round"/>
+</svg>
