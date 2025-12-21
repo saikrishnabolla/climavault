@@ -243,14 +243,14 @@ export default function Dashboard() {
                     <div className="hidden xl:block h-10 w-[1px] bg-gray-100" />
 
                     {/* Date Pickers Strip */}
-                    <div className="flex items-center gap-3 w-full xl:w-auto">
+                    <div className="grid grid-cols-2 gap-2 w-full xl:flex xl:items-center xl:gap-3 xl:w-auto">
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="flex-1 xl:w-48 h-16 rounded-[2rem] bg-gray-50 border-none justify-start px-6">
-                                    <CalendarIconLucide className="mr-3 h-5 w-5 text-gray-400" />
+                                <Button variant="outline" className="h-16 rounded-[2rem] bg-gray-50 border-none justify-start px-4 xl:px-6 xl:w-48">
+                                    <CalendarIconLucide className="hidden sm:block mr-2 lg:mr-3 h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
                                     <div className="text-left">
-                                        <Label className="text-[10px] uppercase font-black text-gray-400 block -mb-1">From</Label>
-                                        <span className="font-bold text-sm">{format(startDate, "MMM d, yyyy")}</span>
+                                        <Label className="text-[9px] lg:text-[10px] uppercase font-black text-gray-400 block -mb-1">From</Label>
+                                        <span className="font-bold text-xs lg:text-sm">{format(startDate, "MMM d, yyyy")}</span>
                                     </div>
                                 </Button>
                             </PopoverTrigger>
@@ -261,11 +261,11 @@ export default function Dashboard() {
 
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="flex-1 xl:w-48 h-16 rounded-[2rem] bg-gray-50 border-none justify-start px-6">
-                                    <CalendarIconLucide className="mr-3 h-5 w-5 text-gray-400" />
+                                <Button variant="outline" className="h-16 rounded-[2rem] bg-gray-50 border-none justify-start px-4 xl:px-6 xl:w-48">
+                                    <CalendarIconLucide className="hidden sm:block mr-2 lg:mr-3 h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
                                     <div className="text-left">
-                                        <Label className="text-[10px] uppercase font-black text-gray-400 block -mb-1">To</Label>
-                                        <span className="font-bold text-sm">{format(endDate, "MMM d, yyyy")}</span>
+                                        <Label className="text-[9px] lg:text-[10px] uppercase font-black text-gray-400 block -mb-1">To</Label>
+                                        <span className="font-bold text-xs lg:text-sm">{format(endDate, "MMM d, yyyy")}</span>
                                     </div>
                                 </Button>
                             </PopoverTrigger>
@@ -275,123 +275,153 @@ export default function Dashboard() {
                         </Popover>
                     </div>
 
-                    <div className="hidden xl:block h-10 w-[1px] bg-gray-100" />
+                    {/* Actions Strip: Run Query + Settings */}
+                    <div className="flex items-center gap-2 w-full xl:w-auto">
+                        <Button
+                            onClick={fetchWeatherData}
+                            disabled={loading}
+                            className="flex-1 xl:w-auto h-16 px-6 lg:px-10 rounded-[2rem] bg-primary text-white font-black text-sm lg:text-lg transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-primary/20"
+                        >
+                            {loading ? <Loader2 className="animate-spin h-6 w-6" /> : (
+                                <div className="flex items-center justify-center gap-2">
+                                    <span>Run Query</span>
+                                    <ArrowRight className="h-5 w-5" />
+                                </div>
+                            )}
+                        </Button>
 
-                    {/* Advanced Settings Trigger */}
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="h-16 w-16 xl:w-20 rounded-[2rem] bg-gray-50 border-none flex items-center justify-center group relative">
-                                <Settings2 className="h-6 w-6 text-gray-400 group-hover:text-primary transition-colors" />
-                                {(temperatureUnit !== "celsius" || windSpeedUnit !== "kmh" || precipitationUnit !== "mm" || model !== "best_match") && (
-                                    <span className="absolute top-4 right-4 w-2 h-2 bg-primary rounded-full" />
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80 p-6 rounded-[2.5rem] border-none shadow-2xl bg-white space-y-6" align="end" sideOffset={12}>
-                            <div className="space-y-4">
-                                <h4 className="font-bold text-lg px-1">Query Settings</h4>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="h-16 w-16 xl:w-20 rounded-[2rem] bg-gray-50 border-none flex items-center justify-center group relative shrink-0">
+                                    <Settings2 className="h-6 w-6 text-gray-400 group-hover:text-primary transition-colors" />
+                                    {(temperatureUnit !== "celsius" || windSpeedUnit !== "kmh" || precipitationUnit !== "mm" || model !== "best_match") && (
+                                        <span className="absolute top-4 right-4 w-2 h-2 bg-primary rounded-full" />
+                                    )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                                className="w-80 p-5 rounded-[2rem] border border-gray-100 shadow-2xl bg-white space-y-5 animate-in fade-in slide-in-from-right-4 duration-300"
+                                align="end"
+                                side="left"
+                                sideOffset={16}
+                                collisionPadding={16}
+                            >
+                                <div className="space-y-5">
+                                    <div className="flex items-center justify-between px-1">
+                                        <h4 className="font-bold text-lg tracking-tight text-[#1D1D1F]">Query Settings</h4>
+                                        <Badge variant="outline" className="text-[9px] font-black uppercase text-gray-400 border-gray-100">Live API</Badge>
+                                    </div>
 
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Temperature Unit</Label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {units.temperature.map(u => (
-                                            <Button
-                                                key={u.id}
-                                                variant={temperatureUnit === u.id ? "secondary" : "ghost"}
-                                                className={cn("rounded-xl h-10 font-bold", temperatureUnit === u.id && "bg-primary/10 text-primary")}
-                                                onClick={() => setTemperatureUnit(u.id as any)}
-                                            >
-                                                {u.label.split(' ')[1] || u.label}
-                                            </Button>
-                                        ))}
+                                    <div className="space-y-4">
+                                        <div className="space-y-2.5">
+                                            <Label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Temperature Unit</Label>
+                                            <div className="grid grid-cols-2 gap-1.5 p-1 bg-gray-50 rounded-2xl">
+                                                {units.temperature.map(u => (
+                                                    <Button
+                                                        key={u.id}
+                                                        variant="ghost"
+                                                        className={cn(
+                                                            "rounded-xl h-9 text-xs font-bold transition-all",
+                                                            temperatureUnit === u.id ? "bg-white shadow-sm text-primary" : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+                                                        )}
+                                                        onClick={() => setTemperatureUnit(u.id as any)}
+                                                    >
+                                                        {u.label.split(' ')[1] || u.label}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2.5">
+                                            <Label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Wind Speed Unit</Label>
+                                            <div className="grid grid-cols-4 gap-1 p-1 bg-gray-50 rounded-2xl">
+                                                {units.wind_speed.map(u => (
+                                                    <Button
+                                                        key={u.id}
+                                                        variant="ghost"
+                                                        className={cn(
+                                                            "rounded-xl h-9 text-[10px] font-black p-0 transition-all",
+                                                            windSpeedUnit === u.id ? "bg-white shadow-sm text-primary" : "text-gray-400 hover:text-gray-600 hover:bg-white/50"
+                                                        )}
+                                                        onClick={() => setWindSpeedUnit(u.id as any)}
+                                                    >
+                                                        {u.label}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2.5">
+                                            <Label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Precipitation Unit</Label>
+                                            <div className="grid grid-cols-2 gap-1.5 p-1 bg-gray-50 rounded-2xl">
+                                                {units.precipitation.map(u => (
+                                                    <Button
+                                                        key={u.id}
+                                                        variant="ghost"
+                                                        className={cn(
+                                                            "rounded-xl h-9 text-xs font-bold transition-all",
+                                                            precipitationUnit === u.id ? "bg-white shadow-sm text-primary" : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+                                                        )}
+                                                        onClick={() => setPrecipitationUnit(u.id as any)}
+                                                    >
+                                                        {u.label}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2.5">
+                                            <Label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Atmospheric Model</Label>
+                                            <div className="flex flex-col gap-1">
+                                                {weatherModels.map(m => (
+                                                    <Button
+                                                        key={m.id}
+                                                        variant="ghost"
+                                                        className={cn(
+                                                            "rounded-xl h-10 justify-start px-4 font-bold text-xs transition-all",
+                                                            model === m.id ? "bg-primary/5 text-primary" : "text-gray-500 hover:bg-gray-50"
+                                                        )}
+                                                        onClick={() => setModel(m.id)}
+                                                    >
+                                                        {m.label}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Wind Speed Unit</Label>
-                                    <div className="grid grid-cols-4 gap-1">
-                                        {units.wind_speed.map(u => (
-                                            <Button
-                                                key={u.id}
-                                                variant={windSpeedUnit === u.id ? "secondary" : "ghost"}
-                                                className={cn("rounded-xl h-10 text-[10px] font-black p-0", windSpeedUnit === u.id && "bg-primary/10 text-primary")}
-                                                onClick={() => setWindSpeedUnit(u.id as any)}
-                                            >
-                                                {u.label}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Precipitation Unit</Label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {units.precipitation.map(u => (
-                                            <Button
-                                                key={u.id}
-                                                variant={precipitationUnit === u.id ? "secondary" : "ghost"}
-                                                className={cn("rounded-xl h-10 font-bold", precipitationUnit === u.id && "bg-primary/10 text-primary")}
-                                                onClick={() => setPrecipitationUnit(u.id as any)}
-                                            >
-                                                {u.label}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1">Atmospheric Model</Label>
-                                    <div className="grid grid-cols-1 gap-1.5">
-                                        {weatherModels.map(m => (
-                                            <Button
-                                                key={m.id}
-                                                variant={model === m.id ? "secondary" : "ghost"}
-                                                className={cn("rounded-xl h-11 justify-start px-4 font-bold text-xs", model === m.id && "bg-primary/10 text-primary")}
-                                                onClick={() => setModel(m.id)}
-                                            >
-                                                <div className="text-left">
-                                                    <div>{m.label}</div>
-                                                </div>
-                                            </Button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-
-                    {/* Fetch Action */}
-                    <Button
-                        onClick={fetchWeatherData}
-                        disabled={loading}
-                        className="w-full xl:w-auto h-16 px-10 rounded-[2rem] bg-primary text-white font-black text-lg transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-primary/20"
-                    >
-                        {loading ? <Loader2 className="animate-spin h-6 w-6" /> : "Run Query"}
-                        <ArrowRight className="ml-3 h-5 w-5" />
-                    </Button>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
                 </motion.div>
-            </div >
+            </div>
 
             {/* 4. Visualization & Metrics Workspace */}
-            < main className="px-4 lg:px-8 max-w-[1400px] mx-auto pb-24" >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {/* Summary Mini Cards */}
+            <main className="px-4 lg:px-8 max-w-[1400px] mx-auto pb-24">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                    {/* Summary Mini Cards - 2x2 on Mobile */}
                     {[
-                        { icon: TrendingUp, label: "Latitude", val: coordinates.lat.toFixed(4), color: "#3B82F6", bg: "#EFF6FF" },
-                        { icon: Globe, label: "Longitude", val: coordinates.lon.toFixed(4), color: "#3B82F6", bg: "#EFF6FF" },
-                        { icon: LayoutGrid, label: "Resolution", val: "11km Grid", color: "#22C55E", bg: "#F0FDF4" },
-                        { icon: HistoryIcon, label: "Timeline", val: dataType.toUpperCase(), color: "#F97316", bg: "#FFF7ED" },
+                        { icon: TrendingUp, label: "LATITUDE", val: coordinates.lat.toFixed(4), color: "#3B82F6", bg: "#EFF6FF" },
+                        { icon: Globe, label: "LONGITUDE", val: coordinates.lon.toFixed(4), color: "#3B82F6", bg: "#EFF6FF" },
+                        { icon: LayoutGrid, label: "RESOLUTION", val: "11km Grid", color: "#22C55E", bg: "#F0FDF4" },
+                        { icon: HistoryIcon, label: "TIMELINE", val: dataType.toUpperCase(), color: "#F97316", bg: "#FFF7ED" },
                     ].map((item, i) => (
-                        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} key={item.label} className="bg-white p-5 rounded-[2rem] border border-gray-100 flex items-center gap-4">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.1, duration: 0.5, ease: "easeOut" }}
+                            key={item.label}
+                            className="bg-white/80 backdrop-blur-sm p-4 lg:p-5 rounded-[2rem] border border-gray-100 flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4 group hover:border-primary/30 transition-all duration-300 shadow-sm"
+                        >
                             <div
-                                className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner"
+                                className="w-10 h-10 lg:w-12 lg:h-12 rounded-2xl flex items-center justify-center shadow-inner shrink-0 group-hover:scale-110 transition-transform duration-500"
                                 style={{ backgroundColor: item.bg, color: item.color }}
                             >
-                                <item.icon className="h-6 w-6" />
+                                <item.icon className="h-5 w-5 lg:h-6 lg:w-6" />
                             </div>
-                            <div>
-                                <p className="text-xs font-black uppercase text-gray-400 tracking-widest">{item.label}</p>
-                                <p className="font-bold text-lg">{item.val}</p>
+                            <div className="text-center sm:text-left flex-1 min-w-0">
+                                <p className="text-[9px] lg:text-[10px] font-black uppercase text-gray-400 tracking-[0.15em] mb-0.5 lg:mb-1">{item.label}</p>
+                                <p className="font-bold text-sm lg:text-lg text-[#1D1D1F] truncate group-hover:text-primary transition-colors">{item.val}</p>
                             </div>
                         </motion.div>
                     ))}
@@ -460,13 +490,13 @@ export default function Dashboard() {
                         )}
                     </div>
 
-                    {/* Side Panel: Metric Customization */}
+                    {/* Side Panel: Variable Customization */}
                     <aside className="w-full lg:w-[350px] space-y-6">
                         <div className="bg-white rounded-[2.5rem] p-8 one-ui-shadow border border-gray-50 sticky top-24">
                             <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center gap-2">
                                     <Filter className="h-5 w-5 text-primary" />
-                                    <h3 className="text-xl font-bold">Metrics</h3>
+                                    <h3 className="text-xl font-bold">Variables</h3>
                                 </div>
                                 <Badge className="bg-gray-100 text-gray-500 border-none font-black text-[10px] rounded-full px-3">{selectedVariables.length}</Badge>
                             </div>
