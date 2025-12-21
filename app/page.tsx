@@ -378,7 +378,7 @@ export default function Dashboard() {
                     {/* Summary Mini Cards */}
                     {[
                         { icon: TrendingUp, label: "Latitude", val: coordinates.lat.toFixed(4), color: "#3B82F6", bg: "#EFF6FF" },
-                        { icon: Globe, label: "Longitude", val: coordinates.lon.toFixed(4), color: "#A855F7", bg: "#FAF5FF" },
+                        { icon: Globe, label: "Longitude", val: coordinates.lon.toFixed(4), color: "#3B82F6", bg: "#EFF6FF" },
                         { icon: LayoutGrid, label: "Resolution", val: "11km Grid", color: "#22C55E", bg: "#F0FDF4" },
                         { icon: HistoryIcon, label: "Timeline", val: dataType.toUpperCase(), color: "#F97316", bg: "#FFF7ED" },
                     ].map((item, i) => (
