@@ -94,34 +94,34 @@
 }
 
 :root {
-  /* Samsung One UI inspired palette */
-  --background: 220 33% 98%;
-  --foreground: 220 20% 10%;
+  /* Apple-style Light Mode - Clean whites */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 11%;
 
-  --primary: 212 100% 50%;
+  --primary: 212 100% 47%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 220 30% 94%;
-  --secondary-foreground: 220 20% 15%;
+  --secondary: 240 5% 96%;
+  --secondary-foreground: 0 0% 11%;
 
-  --muted: 220 15% 92%;
-  --muted-foreground: 220 10% 45%;
+  --muted: 240 5% 94%;
+  --muted-foreground: 0 0% 45%;
 
-  --accent: 212 90% 96%;
-  --accent-foreground: 212 100% 50%;
+  --accent: 212 60% 96%;
+  --accent-foreground: 212 100% 47%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 220 15% 90%;
-  --input: 220 15% 90%;
-  --ring: 212 100% 50%;
+  --border: 240 6% 90%;
+  --input: 240 6% 90%;
+  --ring: 212 100% 47%;
 
   --card: 0 0% 100%;
-  --card-foreground: 220 20% 10%;
+  --card-foreground: 0 0% 11%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 220 20% 10%;
+  --popover-foreground: 0 0% 11%;
 
   --radius: 1.5rem;
 
@@ -130,6 +130,43 @@
   --chart-3: 43 100% 50%;
   --chart-4: 30 100% 55%;
   --chart-5: 280 80% 60%;
+}
+
+/* Dark Mode - Samsung One UI style */
+.dark {
+  --background: 0 0% 7%;
+  --foreground: 0 0% 95%;
+
+  --primary: 212 100% 55%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 90%;
+
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 60%;
+
+  --accent: 212 50% 15%;
+  --accent-foreground: 212 100% 65%;
+
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 0 0% 18%;
+  --input: 0 0% 18%;
+  --ring: 212 100% 55%;
+
+  --card: 0 0% 10%;
+  --card-foreground: 0 0% 95%;
+
+  --popover: 0 0% 10%;
+  --popover-foreground: 0 0% 95%;
+
+  --chart-1: 212 100% 60%;
+  --chart-2: 173 70% 50%;
+  --chart-3: 43 90% 55%;
+  --chart-4: 30 90% 60%;
+  --chart-5: 280 70% 65%;
 }
 
 @layer base {
@@ -162,13 +199,33 @@
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
   }
 
+  .dark .one-ui-shadow {
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3), 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+  }
+
   .one-ui-card {
-    /* Fixed: Using CSS variable shadow instead of unknown utility in @apply */
-    @apply bg-card rounded-[2rem] border border-white/50 backdrop-blur-sm p-8;
+    @apply bg-card rounded-[2rem] border border-border/50 backdrop-blur-sm p-8;
     box-shadow: var(--shadow-one-ui);
   }
 
   .interactive-hover {
     @apply hover:bg-secondary/80 hover:translate-y-[-2px] transition-all;
+  }
+
+  /* Custom scrollbar for dark mode */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
   }
 }

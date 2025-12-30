@@ -22,6 +22,8 @@ import {
     TrendingUp,
     LayoutGrid,
     Globe,
+    Moon,
+    Sun,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -33,6 +35,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Skeleton } from "@/components/ui/skeleton"
 import WeatherChart from "@/components/weather/weather-chart"
 import WeatherTable from "@/components/weather/weather-table"
 import { cn } from "@/lib/utils"
@@ -58,6 +61,25 @@ export default function Dashboard() {
     const [windSpeedUnit, setWindSpeedUnit] = useState<"kmh" | "ms" | "mph" | "kn">("kmh")
     const [precipitationUnit, setPrecipitationUnit] = useState<"mm" | "inch">("mm")
     const [model, setModel] = useState<string>("best_match")
+
+    // Theme
+    const [isDark, setIsDark] = useState(true)
+
+    // Initialize theme - dark mode is default
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("climavault-theme")
+        // Default to dark unless explicitly set to light
+        const shouldBeDark = savedTheme !== "light"
+        setIsDark(shouldBeDark)
+        document.documentElement.classList.toggle("dark", shouldBeDark)
+    }, [])
+
+    const toggleTheme = useCallback(() => {
+        const newIsDark = !isDark
+        setIsDark(newIsDark)
+        document.documentElement.classList.toggle("dark", newIsDark)
+        localStorage.setItem("climavault-theme", newIsDark ? "dark" : "light")
+    }, [isDark])
 
     // Derived Values
     const currentVariables = useMemo(() => {
@@ -158,17 +180,17 @@ export default function Dashboard() {
 
 
     return (
-        <div className="min-h-screen bg-[#F5F7FA] text-[#1D1D1F] font-inter overflow-x-hidden">
+        <div className="min-h-screen bg-background text-foreground font-inter overflow-x-hidden transition-colors duration-300">
             {/* 1. Integrated Page Header (Samsung Style Wide Header) */}
             <header className="pt-12 pb-6 lg:pt-24 lg:pb-12 px-4 lg:px-8 max-w-[1400px] mx-auto transition-all animate-fade-in relative">
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                     <div className="space-y-4">
-                        <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 min-h-[28px]">
+                        <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground min-h-[28px]">
                             <div className="flex items-center gap-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                                 <span>ClimaVault Archive</span>
                             </div>
-                            <div className="h-3 w-[1px] bg-gray-300" />
+                            <div className="h-3 w-[1px] bg-border" />
                             <span>90.4TB Indexed</span>
                             {loading && (
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-primary">
@@ -178,20 +200,41 @@ export default function Dashboard() {
                             )}
                         </div>
                         <h1 className="text-4xl lg:text-8xl font-bold tracking-tighter">
-                            {location.split(',')[0]} <span className="text-gray-400 font-normal">Vault</span>
+                            {location.split(',')[0]} <span className="text-muted-foreground font-normal">Vault</span>
                         </h1>
-                        <p className="text-lg lg:text-xl text-gray-500 font-medium max-w-2xl">
+                        <p className="text-lg lg:text-xl text-muted-foreground font-medium max-w-2xl">
                             {format(startDate, "MMM d, yyyy")} — {format(endDate, "MMM d, yyyy")}
                         </p>
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.location.reload()}
-                        className="rounded-full hover:bg-gray-100 text-gray-400 font-black uppercase tracking-widest text-[10px] self-start lg:self-center"
-                    >
-                        <Undo2 className="h-4 w-4 mr-2" /> Reset Session
-                    </Button>
+                    <div className="flex items-center gap-2 self-start lg:self-center">
+                        {/* Theme Toggle */}
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={toggleTheme}
+                            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+                        >
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={isDark ? "moon" : "sun"}
+                                    initial={{ scale: 0, rotate: -180 }}
+                                    animate={{ scale: 1, rotate: 0 }}
+                                    exit={{ scale: 0, rotate: 180 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    {isDark ? <Sun className="h-5 w-5 text-foreground" /> : <Moon className="h-5 w-5 text-foreground" />}
+                                </motion.div>
+                            </AnimatePresence>
+                        </motion.button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.location.reload()}
+                            className="rounded-full hover:bg-secondary text-muted-foreground font-black uppercase tracking-widest text-[10px]"
+                        >
+                            <Undo2 className="h-4 w-4 mr-2" /> Reset Session
+                        </Button>
+                    </div>
                 </div>
 
                 <AnimatePresence>
@@ -202,10 +245,10 @@ export default function Dashboard() {
                             exit={{ opacity: 0, y: -20 }}
                             className="mt-6"
                         >
-                            <div className="bg-red-50 border border-red-100 p-4 rounded-3xl flex items-center gap-3 shadow-sm">
-                                <AlertCircle className="h-5 w-5 text-red-500" />
-                                <p className="text-sm font-bold text-red-700 flex-1">{error}</p>
-                                <Button variant="ghost" size="sm" onClick={() => setError(null)} className="h-8 w-8 p-0 rounded-full hover:bg-red-100 text-red-500">
+                            <div className="bg-destructive/10 border border-destructive/20 p-4 rounded-3xl flex items-center gap-3 shadow-sm">
+                                <AlertCircle className="h-5 w-5 text-destructive" />
+                                <p className="text-sm font-bold text-destructive flex-1">{error}</p>
+                                <Button variant="ghost" size="sm" onClick={() => setError(null)} className="h-8 w-8 p-0 rounded-full hover:bg-destructive/20 text-destructive">
                                     <Undo2 className="h-4 w-4" />
                                 </Button>
                             </div>
@@ -219,7 +262,7 @@ export default function Dashboard() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-[2.5rem] p-3 one-ui-shadow flex flex-col xl:flex-row items-center gap-3"
+                    className="bg-card rounded-[2.5rem] p-3 one-ui-shadow flex flex-col xl:flex-row items-center gap-3 border border-border/50"
                 >
                     {/* Location Focus */}
                     <div className="relative flex-1 w-full group">
@@ -228,48 +271,48 @@ export default function Dashboard() {
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && searchLocationFromInput()}
-                            className="pl-12 pr-12 h-16 rounded-[2rem] bg-gray-50 border-none focus-visible:ring-primary/20 transition-all text-lg font-medium"
+                            className="pl-12 pr-12 h-16 rounded-[2rem] bg-gray-50 dark:bg-secondary border-none focus-visible:ring-primary/20 transition-all text-lg font-medium"
                         />
                         <MapPin className="absolute left-4.5 top-5.5 h-5 w-5 text-primary" />
                         <Button
                             size="sm" variant="ghost"
-                            className="absolute right-3 top-3 h-10 w-10 p-0 rounded-2xl hover:bg-white"
+                            className="absolute right-3 top-3 h-10 w-10 p-0 rounded-2xl hover:bg-card"
                             onClick={searchLocationFromInput}
                         >
-                            <Search className="h-5 w-5 text-gray-400" />
+                            <Search className="h-5 w-5 text-muted-foreground" />
                         </Button>
                     </div>
 
-                    <div className="hidden xl:block h-10 w-[1px] bg-gray-100" />
+                    <div className="hidden xl:block h-10 w-[1px] bg-border" />
 
                     {/* Date Pickers Strip */}
                     <div className="grid grid-cols-2 gap-2 w-full xl:flex xl:items-center xl:gap-3 xl:w-auto">
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="h-16 rounded-[2rem] bg-gray-50 border-none justify-start px-4 xl:px-6 xl:w-48">
-                                    <CalendarIconLucide className="hidden sm:block mr-2 lg:mr-3 h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
+                                <Button variant="outline" className="h-16 rounded-[2rem] bg-gray-50 dark:bg-secondary border-none justify-start px-4 xl:px-6 xl:w-48">
+                                    <CalendarIconLucide className="hidden sm:block mr-2 lg:mr-3 h-4 w-4 lg:h-5 lg:w-5 text-gray-400 dark:text-muted-foreground" />
                                     <div className="text-left">
-                                        <Label className="text-[9px] lg:text-[10px] uppercase font-black text-gray-400 block -mb-1">From</Label>
+                                        <Label className="text-[9px] lg:text-[10px] uppercase font-black text-gray-400 dark:text-muted-foreground block -mb-1">From</Label>
                                         <span className="font-bold text-xs lg:text-sm">{format(startDate, "MMM d, yyyy")}</span>
                                     </div>
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 rounded-3xl overflow-hidden border-none shadow-2xl">
+                            <PopoverContent className="w-auto p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-card">
                                 <Calendar mode="single" selected={startDate} onSelect={(d) => d && setStartDate(d)} initialFocus />
                             </PopoverContent>
                         </Popover>
 
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="h-16 rounded-[2rem] bg-gray-50 border-none justify-start px-4 xl:px-6 xl:w-48">
-                                    <CalendarIconLucide className="hidden sm:block mr-2 lg:mr-3 h-4 w-4 lg:h-5 lg:w-5 text-gray-400" />
+                                <Button variant="outline" className="h-16 rounded-[2rem] bg-gray-50 dark:bg-secondary border-none justify-start px-4 xl:px-6 xl:w-48">
+                                    <CalendarIconLucide className="hidden sm:block mr-2 lg:mr-3 h-4 w-4 lg:h-5 lg:w-5 text-gray-400 dark:text-muted-foreground" />
                                     <div className="text-left">
-                                        <Label className="text-[9px] lg:text-[10px] uppercase font-black text-gray-400 block -mb-1">To</Label>
+                                        <Label className="text-[9px] lg:text-[10px] uppercase font-black text-gray-400 dark:text-muted-foreground block -mb-1">To</Label>
                                         <span className="font-bold text-xs lg:text-sm">{format(endDate, "MMM d, yyyy")}</span>
                                     </div>
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 rounded-3xl overflow-hidden border-none shadow-2xl">
+                            <PopoverContent className="w-auto p-0 rounded-3xl overflow-hidden border-none shadow-2xl bg-card">
                                 <Calendar mode="single" selected={endDate} onSelect={(d) => d && setEndDate(d)} initialFocus />
                             </PopoverContent>
                         </Popover>
@@ -292,15 +335,15 @@ export default function Dashboard() {
 
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" className="h-16 w-16 xl:w-20 rounded-[2rem] bg-gray-50 border-none flex items-center justify-center group relative shrink-0">
-                                    <Settings2 className="h-6 w-6 text-gray-400 group-hover:text-primary transition-colors" />
+                                <Button variant="outline" className="h-16 w-16 xl:w-20 rounded-[2rem] bg-gray-50 dark:bg-secondary border-none flex items-center justify-center group relative shrink-0">
+                                    <Settings2 className="h-6 w-6 text-gray-400 dark:text-muted-foreground group-hover:text-primary transition-colors" />
                                     {(temperatureUnit !== "celsius" || windSpeedUnit !== "kmh" || precipitationUnit !== "mm" || model !== "best_match") && (
                                         <span className="absolute top-4 right-4 w-2 h-2 bg-primary rounded-full" />
                                     )}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent
-                                className="w-80 p-5 rounded-[2rem] border border-gray-100 shadow-2xl bg-white space-y-5 animate-in fade-in slide-in-from-right-4 duration-300"
+                                className="w-80 p-5 rounded-[2rem] border border-border shadow-2xl bg-card space-y-5 animate-in fade-in slide-in-from-right-4 duration-300"
                                 align="end"
                                 side="left"
                                 sideOffset={16}
@@ -308,21 +351,21 @@ export default function Dashboard() {
                             >
                                 <div className="space-y-5">
                                     <div className="flex items-center justify-between px-1">
-                                        <h4 className="font-bold text-lg tracking-tight text-[#1D1D1F]">Query Settings</h4>
-                                        <Badge variant="outline" className="text-[9px] font-black uppercase text-gray-400 border-gray-100">Live API</Badge>
+                                        <h4 className="font-bold text-lg tracking-tight">Query Settings</h4>
+                                        <Badge variant="outline" className="text-[9px] font-black uppercase text-muted-foreground border-border">Live API</Badge>
                                     </div>
 
                                     <div className="space-y-4">
                                         <div className="space-y-2.5">
-                                            <Label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Temperature Unit</Label>
-                                            <div className="grid grid-cols-2 gap-1.5 p-1 bg-gray-50 rounded-2xl">
+                                            <Label className="text-[10px] font-black uppercase text-gray-400 dark:text-muted-foreground tracking-[0.2em] ml-1">Temperature Unit</Label>
+                                            <div className="grid grid-cols-2 gap-1.5 p-1 bg-gray-50 dark:bg-secondary rounded-2xl">
                                                 {units.temperature.map(u => (
                                                     <Button
                                                         key={u.id}
                                                         variant="ghost"
                                                         className={cn(
                                                             "rounded-xl h-9 text-xs font-bold transition-all",
-                                                            temperatureUnit === u.id ? "bg-white shadow-sm text-primary" : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+                                                            temperatureUnit === u.id ? "bg-white dark:bg-card shadow-sm text-primary" : "text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground hover:bg-white/50 dark:hover:bg-card/50"
                                                         )}
                                                         onClick={() => setTemperatureUnit(u.id as any)}
                                                     >
@@ -333,15 +376,15 @@ export default function Dashboard() {
                                         </div>
 
                                         <div className="space-y-2.5">
-                                            <Label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Wind Speed Unit</Label>
-                                            <div className="grid grid-cols-4 gap-1 p-1 bg-gray-50 rounded-2xl">
+                                            <Label className="text-[10px] font-black uppercase text-gray-400 dark:text-muted-foreground tracking-[0.2em] ml-1">Wind Speed Unit</Label>
+                                            <div className="grid grid-cols-4 gap-1 p-1 bg-gray-50 dark:bg-secondary rounded-2xl">
                                                 {units.wind_speed.map(u => (
                                                     <Button
                                                         key={u.id}
                                                         variant="ghost"
                                                         className={cn(
                                                             "rounded-xl h-9 text-[10px] font-black p-0 transition-all",
-                                                            windSpeedUnit === u.id ? "bg-white shadow-sm text-primary" : "text-gray-400 hover:text-gray-600 hover:bg-white/50"
+                                                            windSpeedUnit === u.id ? "bg-white dark:bg-card shadow-sm text-primary" : "text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground hover:bg-white/50 dark:hover:bg-card/50"
                                                         )}
                                                         onClick={() => setWindSpeedUnit(u.id as any)}
                                                     >
@@ -352,15 +395,15 @@ export default function Dashboard() {
                                         </div>
 
                                         <div className="space-y-2.5">
-                                            <Label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Precipitation Unit</Label>
-                                            <div className="grid grid-cols-2 gap-1.5 p-1 bg-gray-50 rounded-2xl">
+                                            <Label className="text-[10px] font-black uppercase text-gray-400 dark:text-muted-foreground tracking-[0.2em] ml-1">Precipitation Unit</Label>
+                                            <div className="grid grid-cols-2 gap-1.5 p-1 bg-gray-50 dark:bg-secondary rounded-2xl">
                                                 {units.precipitation.map(u => (
                                                     <Button
                                                         key={u.id}
                                                         variant="ghost"
                                                         className={cn(
                                                             "rounded-xl h-9 text-xs font-bold transition-all",
-                                                            precipitationUnit === u.id ? "bg-white shadow-sm text-primary" : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+                                                            precipitationUnit === u.id ? "bg-white dark:bg-card shadow-sm text-primary" : "text-gray-500 dark:text-muted-foreground hover:text-gray-700 dark:hover:text-foreground hover:bg-white/50 dark:hover:bg-card/50"
                                                         )}
                                                         onClick={() => setPrecipitationUnit(u.id as any)}
                                                     >
@@ -371,7 +414,7 @@ export default function Dashboard() {
                                         </div>
 
                                         <div className="space-y-2.5">
-                                            <Label className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Atmospheric Model</Label>
+                                            <Label className="text-[10px] font-black uppercase text-gray-400 dark:text-muted-foreground tracking-[0.2em] ml-1">Atmospheric Model</Label>
                                             <div className="flex flex-col gap-1">
                                                 {weatherModels.map(m => (
                                                     <Button
@@ -379,7 +422,7 @@ export default function Dashboard() {
                                                         variant="ghost"
                                                         className={cn(
                                                             "rounded-xl h-10 justify-start px-4 font-bold text-xs transition-all",
-                                                            model === m.id ? "bg-primary/5 text-primary" : "text-gray-500 hover:bg-gray-50"
+                                                            model === m.id ? "bg-primary/10 text-primary" : "text-gray-500 dark:text-muted-foreground hover:bg-gray-50 dark:hover:bg-secondary"
                                                         )}
                                                         onClick={() => setModel(m.id)}
                                                     >
@@ -398,44 +441,93 @@ export default function Dashboard() {
 
             {/* 4. Visualization & Metrics Workspace */}
             <main className="px-4 lg:px-8 max-w-[1400px] mx-auto pb-24">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-                    {/* Summary Mini Cards - 2x2 on Mobile */}
-                    {[
-                        { icon: TrendingUp, label: "LATITUDE", val: coordinates.lat.toFixed(4), color: "#3B82F6", bg: "#EFF6FF" },
-                        { icon: Globe, label: "LONGITUDE", val: coordinates.lon.toFixed(4), color: "#3B82F6", bg: "#EFF6FF" },
-                        { icon: LayoutGrid, label: "RESOLUTION", val: "11km Grid", color: "#22C55E", bg: "#F0FDF4" },
-                        { icon: HistoryIcon, label: "TIMELINE", val: dataType.toUpperCase(), color: "#F97316", bg: "#FFF7ED" },
-                    ].map((item, i) => (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1, duration: 0.5, ease: "easeOut" }}
-                            key={item.label}
-                            className="bg-white/80 backdrop-blur-sm p-4 lg:p-5 rounded-[2rem] border border-gray-100 flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4 group hover:border-primary/30 transition-all duration-300 shadow-sm"
-                        >
+                {loading ? (
+                    /* Skeleton Loading State for Summary Cards */
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                        {[1, 2, 3, 4].map((i) => (
                             <div
-                                className="w-10 h-10 lg:w-12 lg:h-12 rounded-2xl flex items-center justify-center shadow-inner shrink-0 group-hover:scale-110 transition-transform duration-500"
-                                style={{ backgroundColor: item.bg, color: item.color }}
+                                key={i}
+                                className="bg-card/80 backdrop-blur-sm p-4 lg:p-5 rounded-[2rem] border border-border flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4"
                             >
-                                <item.icon className="h-5 w-5 lg:h-6 lg:w-6" />
+                                <Skeleton className="w-10 h-10 lg:w-12 lg:h-12 rounded-2xl shrink-0" />
+                                <div className="flex-1 space-y-2 w-full">
+                                    <Skeleton className="h-3 w-16 mx-auto sm:mx-0" />
+                                    <Skeleton className="h-5 w-24 mx-auto sm:mx-0" />
+                                </div>
                             </div>
-                            <div className="text-center sm:text-left flex-1 min-w-0">
-                                <p className="text-[9px] lg:text-[10px] font-black uppercase text-gray-400 tracking-[0.15em] mb-0.5 lg:mb-1">{item.label}</p>
-                                <p className="font-bold text-sm lg:text-lg text-[#1D1D1F] truncate group-hover:text-primary transition-colors">{item.val}</p>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                        {/* Summary Mini Cards - 2x2 on Mobile */}
+                        {[
+                            { icon: TrendingUp, label: "LATITUDE", val: coordinates.lat.toFixed(4), color: "text-blue-500", bg: "bg-blue-500/10 dark:bg-blue-500/20" },
+                            { icon: Globe, label: "LONGITUDE", val: coordinates.lon.toFixed(4), color: "text-blue-500", bg: "bg-blue-500/10 dark:bg-blue-500/20" },
+                            { icon: LayoutGrid, label: "RESOLUTION", val: "11km Grid", color: "text-emerald-500", bg: "bg-emerald-500/10 dark:bg-emerald-500/20" },
+                            { icon: HistoryIcon, label: "TIMELINE", val: dataType.toUpperCase(), color: "text-orange-500", bg: "bg-orange-500/10 dark:bg-orange-500/20" },
+                        ].map((item, i) => (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1, duration: 0.5, ease: "easeOut" }}
+                                key={item.label}
+                                className="bg-card/80 backdrop-blur-sm p-4 lg:p-5 rounded-[2rem] border border-border flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4 group hover:border-primary/30 transition-all duration-300 shadow-sm"
+                            >
+                                <div
+                                    className={cn(
+                                        "w-10 h-10 lg:w-12 lg:h-12 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500",
+                                        item.bg, item.color
+                                    )}
+                                >
+                                    <item.icon className="h-5 w-5 lg:h-6 lg:w-6" />
+                                </div>
+                                <div className="text-center sm:text-left flex-1 min-w-0">
+                                    <p className="text-[9px] lg:text-[10px] font-black uppercase text-muted-foreground tracking-[0.15em] mb-0.5 lg:mb-1">{item.label}</p>
+                                    <p className="font-bold text-sm lg:text-lg truncate group-hover:text-primary transition-colors">{item.val}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
 
                 <div className="flex flex-col lg:flex-row items-stretch gap-8 min-h-[500px] h-full">
 
                     {/* Main Content Area: The Results */}
                     <div className="flex-1 w-full space-y-6 flex flex-col">
-                        {weatherData ? (
+                        {loading ? (
+                            /* Skeleton Loading State for Chart/Table */
+                            <div className="space-y-6 flex-1 flex flex-col">
+                                <div className="flex items-center justify-between">
+                                    <Skeleton className="h-12 w-64 rounded-full" />
+                                </div>
+                                <div className="bg-card rounded-[2.5rem] p-6 one-ui-shadow border border-border flex-1">
+                                    <div className="w-full h-full min-h-[300px] md:min-h-[400px] flex flex-col gap-4">
+                                        <div className="flex justify-between items-center">
+                                            <Skeleton className="h-4 w-32" />
+                                            <Skeleton className="h-4 w-24" />
+                                        </div>
+                                        <div className="flex-1 flex items-end gap-2 pt-8">
+                                            {[...Array(12)].map((_, i) => (
+                                                <Skeleton
+                                                    key={i}
+                                                    className="flex-1 rounded-t-lg"
+                                                    style={{ height: `${Math.random() * 60 + 20}%` }}
+                                                />
+                                            ))}
+                                        </div>
+                                        <div className="flex justify-between">
+                                            {[...Array(6)].map((_, i) => (
+                                                <Skeleton key={i} className="h-3 w-12" />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : weatherData ? (
                             <div className="space-y-6 flex-1 flex flex-col">
                                 {/* View Toggle Bar */}
                                 <div className="flex items-center justify-between">
-                                    <div className="bg-gray-200/50 p-1 rounded-full flex items-center relative gap-1">
+                                    <div className="bg-gray-200/50 dark:bg-secondary/50 p-1 rounded-full flex items-center relative gap-1">
                                         {[
                                             { id: 'chart', label: 'Analytics', icon: BarChart3 },
                                             { id: 'table', label: 'Data Grid', icon: TableIcon }
@@ -445,15 +537,15 @@ export default function Dashboard() {
                                                 onClick={() => setActiveTab(t.id)}
                                                 className={cn(
                                                     "relative px-6 h-10 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2 z-10",
-                                                    activeTab === t.id ? "text-primary" : "text-gray-400 hover:text-gray-600"
+                                                    activeTab === t.id ? "text-primary" : "text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground"
                                                 )}
                                             >
-                                                <t.icon className={cn("h-4 w-4", activeTab === t.id ? "text-primary" : "text-gray-400")} />
+                                                <t.icon className={cn("h-4 w-4", activeTab === t.id ? "text-primary" : "text-gray-400 dark:text-muted-foreground")} />
                                                 {t.label}
                                                 {activeTab === t.id && (
                                                     <motion.div
                                                         layoutId="activeViewTab"
-                                                        className="absolute inset-0 bg-white rounded-full shadow-md z-[-1]"
+                                                        className="absolute inset-0 bg-white dark:bg-card rounded-full shadow-md z-[-1]"
                                                         transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                                                     />
                                                 )}
@@ -465,7 +557,7 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* The actual Data Card */}
-                                <motion.div layout className="bg-white rounded-[2.5rem] p-6 one-ui-shadow border border-gray-50 flex flex-col relative overflow-hidden flex-1">
+                                <motion.div layout className="bg-card rounded-[2.5rem] p-6 one-ui-shadow border border-border flex flex-col relative overflow-hidden flex-1">
                                     {activeTab === 'chart' ? (
                                         <div className="w-full h-[300px] md:h-[400px] lg:h-full">
                                             <WeatherChart data={weatherData} variables={selectedVariables} isLoading={false} />
@@ -478,13 +570,13 @@ export default function Dashboard() {
                                 </motion.div>
                             </div>
                         ) : (
-                            <div className="h-[600px] bg-white/40 rounded-[2.5rem] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-12 space-y-6">
-                                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-xl">
+                            <div className="h-[600px] bg-card/40 rounded-[2.5rem] border-2 border-dashed border-border flex flex-col items-center justify-center text-center p-12 space-y-6">
+                                <div className="w-24 h-24 bg-card rounded-full flex items-center justify-center shadow-xl">
                                     <Cloud className="h-10 w-10 text-primary animate-pulse" />
                                 </div>
                                 <div className="space-y-2">
                                     <h3 className="text-2xl font-bold tracking-tight">Set your target context</h3>
-                                    <p className="text-gray-500 font-medium max-w-sm">Enter a location and timeframe above to unlock the archives.</p>
+                                    <p className="text-muted-foreground font-medium max-w-sm">Enter a location and timeframe above to unlock the archives.</p>
                                 </div>
                             </div>
                         )}
@@ -492,16 +584,16 @@ export default function Dashboard() {
 
                     {/* Side Panel: Variable Customization */}
                     <aside className="w-full lg:w-[350px] space-y-6">
-                        <div className="bg-white rounded-[2.5rem] p-8 one-ui-shadow border border-gray-50 sticky top-24">
+                        <div className="bg-card rounded-[2.5rem] p-8 one-ui-shadow border border-border sticky top-24">
                             <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center gap-2">
                                     <Filter className="h-5 w-5 text-primary" />
                                     <h3 className="text-xl font-bold">Variables</h3>
                                 </div>
-                                <Badge className="bg-gray-100 text-gray-500 border-none font-black text-[10px] rounded-full px-3">{selectedVariables.length}</Badge>
+                                <Badge className="bg-secondary text-muted-foreground border-none font-black text-[10px] rounded-full px-3">{selectedVariables.length}</Badge>
                             </div>
 
-                            <div className="bg-gray-100/80 p-1 rounded-2xl flex items-center mb-6 relative">
+                            <div className="bg-gray-100 dark:bg-secondary/80 p-1 rounded-2xl flex items-center mb-6 relative">
                                 {[
                                     { id: 'hourly', label: 'Hourly' },
                                     { id: 'daily', label: 'Daily' }
@@ -514,14 +606,14 @@ export default function Dashboard() {
                                         }}
                                         className={cn(
                                             "flex-1 relative z-10 h-10 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300",
-                                            dataType === t.id ? "text-primary" : "text-gray-400 hover:text-gray-600"
+                                            dataType === t.id ? "text-primary" : "text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground"
                                         )}
                                     >
                                         {t.label}
                                         {dataType === t.id && (
                                             <motion.div
                                                 layoutId="activeDataTypeTab"
-                                                className="absolute inset-0 bg-white rounded-xl shadow-sm z-[-1]"
+                                                className="absolute inset-0 bg-white dark:bg-card rounded-xl shadow-sm z-[-1]"
                                                 transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
                                             />
                                         )}
@@ -532,7 +624,7 @@ export default function Dashboard() {
                             <div className="space-y-6 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
                                 {categories.map((cat) => (
                                     <div key={cat} className="space-y-4">
-                                        <Label className="text-xs font-black uppercase text-gray-400 tracking-widest ml-1">{cat}</Label>
+                                        <Label className="text-xs font-black uppercase text-gray-400 dark:text-muted-foreground tracking-widest ml-1">{cat}</Label>
                                         <div className="space-y-2">
                                             {currentVariables.filter(v => v.category === cat).map(v => (
                                                 <motion.div
@@ -543,14 +635,14 @@ export default function Dashboard() {
                                                         "flex items-center justify-between p-4 rounded-2xl transition-all cursor-pointer border-2",
                                                         selectedVariables.includes(v.id)
                                                             ? "bg-primary/5 border-primary/20"
-                                                            : "bg-white border-transparent hover:bg-gray-50 hover:border-gray-100"
+                                                            : "bg-white dark:bg-card border-transparent hover:bg-gray-50 dark:hover:bg-secondary hover:border-gray-100 dark:hover:border-border"
                                                     )}
                                                 >
                                                     <div className="flex items-center gap-3">
-                                                        <Checkbox checked={selectedVariables.includes(v.id)} className="rounded-md border-gray-300 w-5 h-5 data-[state=checked]:bg-primary" />
-                                                        <span className="text-sm font-bold text-gray-700">{v.label}</span>
+                                                        <Checkbox checked={selectedVariables.includes(v.id)} className="rounded-md border-gray-300 dark:border-border w-5 h-5 data-[state=checked]:bg-primary" />
+                                                        <span className="text-sm font-bold text-gray-700 dark:text-foreground">{v.label}</span>
                                                     </div>
-                                                    <span className="text-xs font-black text-gray-400">{v.unit}</span>
+                                                    <span className="text-xs font-black text-gray-400 dark:text-muted-foreground">{v.unit}</span>
                                                 </motion.div>
                                             ))}
                                         </div>
@@ -558,9 +650,9 @@ export default function Dashboard() {
                                 ))}
                             </div>
 
-                            <div className="pt-8 border-t border-gray-50 flex items-center gap-2">
-                                <Info className="h-4 w-4 text-gray-300" />
-                                <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter">API V1.4 ARCHIVE ACCESS</p>
+                            <div className="pt-8 border-t border-border flex items-center gap-2">
+                                <Info className="h-4 w-4 text-muted-foreground/50" />
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">API V1.4 ARCHIVE ACCESS</p>
                             </div>
                         </div>
                     </aside>
@@ -573,24 +665,24 @@ export default function Dashboard() {
                         <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="w-14 h-14 bg-black text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-gray-800 transition-colors"
+                            className="w-14 h-14 bg-gray-100 dark:bg-secondary text-foreground rounded-full flex items-center justify-center shadow-2xl hover:bg-gray-200 dark:hover:bg-secondary/80 transition-colors"
                         >
                             <Info className="h-6 w-6" />
                         </motion.button>
                     </PopoverTrigger>
-                    <PopoverContent side="top" align="start" className="w-64 p-5 rounded-[2rem] border-none shadow-2xl bg-white mb-4 ml-4">
+                    <PopoverContent side="top" align="start" className="w-64 p-5 rounded-[2rem] border-none shadow-2xl bg-card mb-4 ml-4">
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-xs font-bold uppercase tracking-widest text-[#1D1D1F]">System Operational</span>
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <span className="text-xs font-bold uppercase tracking-widest">System Operational</span>
                             </div>
-                            <div className="h-[1px] w-full bg-gray-100" />
+                            <div className="h-[1px] w-full bg-border" />
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Archive Capacity</p>
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Archive Capacity</p>
                                 <p className="text-sm font-bold">90.4 TB Online</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Inference Engine</p>
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Inference Engine</p>
                                 <p className="text-sm font-bold">V1.4 Stable (ERA5)</p>
                             </div>
                         </div>

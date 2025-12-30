@@ -48,8 +48,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="font-segoe antialiased">
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className="font-inter antialiased transition-colors duration-300">
         {children}
       </body>
     </html>
