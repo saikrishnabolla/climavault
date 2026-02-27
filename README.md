@@ -4,7 +4,7 @@ Explore historical weather data going back to 1940 - for any location on Earth.
 
 **Live at [climavault.vercel.app](https://climavault.vercel.app)**
 
-![Preview](https://v1.screenshot.11ty.dev/https%3A%2F%2Fclimavault.vercel.app/opengraph/)
+![Preview](https://v1.screenshot.11ty.dev/https%3A%2F%2Fclimavault.vercel.app/opengraph/_wait:3/)
 
 ---
 
