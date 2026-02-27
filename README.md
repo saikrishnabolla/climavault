@@ -1,6 +1,6 @@
 # ClimaVault
 
-Explore historical weather data going back to 1940 — for any location on Earth.
+Explore historical weather data going back to 1940 - for any location on Earth.
 
 **Live at [climavault.vercel.app](https://climavault.vercel.app)**
 
