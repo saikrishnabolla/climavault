@@ -6,6 +6,14 @@ Explore historical weather data going back to 1940 - for any location on Earth.
 
 ![Preview](https://v1.screenshot.11ty.dev/https%3A%2F%2Fclimavault.vercel.app/opengraph/_wait:3/)
 
+## Highlights
+
+- ERA5, ERA5-Land, and CERRA reanalysis model support - real climate science data
+- 50+ weather variables from 1940 to present
+- API routes proxy Open-Meteo for CORS handling
+- Dynamic OG image generation for social sharing
+- CC BY-NC 4.0 licensed
+
 ---
 
 ClimaVault is a web app that puts 80+ years of climate data at your fingertips. It wraps the [Open-Meteo Historical Weather API](https://open-meteo.com) in a clean interface where you can search any location, pick a date range from 1940 to today, and visualize the results as interactive charts or tables.
