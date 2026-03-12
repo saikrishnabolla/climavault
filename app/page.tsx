@@ -85,12 +85,12 @@ export default function Dashboard() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // Re-fetch when hourly/daily toggle changes
+    // Re-fetch when data type or selected variables change
     useEffect(() => {
         if (!hasMounted.current) return
         fetchWeatherData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dataType])
+    }, [dataType, selectedVariables])
 
     const fetchWeatherData = async () => {
         if (!startDate || !endDate || selectedVariables.length === 0) {
