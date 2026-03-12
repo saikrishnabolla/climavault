@@ -4,25 +4,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
 
-    // Security: Prevent direct API access/abuse from external sources
-    const referer = request.headers.get("referer")
-    const origin = request.headers.get("origin")
-    const host = request.headers.get("host")
-
-    // Strict check: Must have referer/origin and it must match the host
-    // This allows requests from the website UI but blocks most direct curl/script attacks
-    const isSameOrigin =
-      (referer && host && referer.includes(host)) ||
-      (origin && host && origin.includes(host))
-
-    if (!isSameOrigin) {
-      // Allow local development flexibility or relax if needed, but for now strict as requested
-      // We can also check for a specific logic secret if we wanted server-to-server auth
-      if (process.env.NODE_ENV === 'production' || (!referer && !origin)) {
-        return NextResponse.json({ error: "Unauthorized access: Request must originate from the website." }, { status: 403 })
-      }
-    }
-
     // Extract parameters from the request
     const latitude = searchParams.get("latitude")
     const longitude = searchParams.get("longitude")
@@ -78,14 +59,16 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const data = await response.json()
-
     if (!response.ok) {
-      return NextResponse.json(
-        { error: data.reason || data.error || `OpenMeteo API error: ${response.status}` },
-        { status: response.status },
-      )
+      let reason = `OpenMeteo API error: ${response.status}`
+      try {
+        const errData = await response.json()
+        reason = errData.reason || errData.error || reason
+      } catch {}
+      return NextResponse.json({ error: reason }, { status: response.status })
     }
+
+    const data = await response.json()
 
     // Return the weather data
     return NextResponse.json(data)

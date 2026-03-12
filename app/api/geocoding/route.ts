@@ -4,21 +4,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
 
-    // Security: Prevent direct API access/abuse from external sources
-    const referer = request.headers.get("referer")
-    const origin = request.headers.get("origin")
-    const host = request.headers.get("host")
-
-    const isSameOrigin =
-      (referer && host && referer.includes(host)) ||
-      (origin && host && origin.includes(host))
-
-    if (!isSameOrigin) {
-      if (process.env.NODE_ENV === 'production' || (!referer && !origin)) {
-        return NextResponse.json({ error: "Unauthorized access: Request must originate from the website." }, { status: 403 })
-      }
-    }
-
     const name = searchParams.get("name")
 
     if (!name) {
@@ -31,8 +16,6 @@ export async function GET(request: NextRequest) {
     geocodingUrl.searchParams.set("count", "10") // Return up to 10 results
     geocodingUrl.searchParams.set("language", "en") // English results
     geocodingUrl.searchParams.set("format", "json") // JSON format
-
-    console.log("Geocoding request URL:", geocodingUrl.toString())
 
     // Make the request to OpenMeteo Geocoding API
     const response = await fetch(geocodingUrl.toString(), {
@@ -48,7 +31,6 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json()
-    console.log("Geocoding response:", data)
 
     // Check if we have results
     if (!data.results || data.results.length === 0) {

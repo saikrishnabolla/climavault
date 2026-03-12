@@ -66,13 +66,13 @@ export default function WeatherTable({ data, variables }: WeatherTableProps) {
                     </TableHeader>
                     <TableBody>
                         {dataSource.time.map((time: string, index: number) => (
-                            <TableRow key={time} className="hover:bg-primary/5 transition-colors border-b-secondary/50 group">
+                            <TableRow key={`${time}-${index}`} className="hover:bg-primary/5 transition-colors border-b-secondary/50 group">
                                 <TableCell className="font-semibold text-xs text-muted-foreground group-hover:text-primary transition-colors">
                                     {formatTime(time)}
                                 </TableCell>
                                 {variables.map((variable) => (
                                     <TableCell key={`${time}-${variable}`} className="text-sm whitespace-nowrap">
-                                        {dataSource[variable] ? (
+                                        {dataSource[variable] !== undefined ? (
                                             <span className="font-medium">{dataSource[variable][index]}</span>
                                         ) : (
                                             <span className="text-muted-foreground/30">-</span>

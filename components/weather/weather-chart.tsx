@@ -1,7 +1,7 @@
 "use client"
 
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip } from "recharts"
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartContainer } from "@/components/ui/chart"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BarChart3 } from "lucide-react"
 
@@ -201,7 +201,7 @@ export default function WeatherChart({ data, variables, isLoading }: WeatherChar
         .map((time: string, index: number) => {
             const point: any = { time: time }
             variables.forEach((variable) => {
-                if (dataSource[variable]) {
+                if (dataSource[variable] !== undefined) {
                     point[variable] = dataSource[variable][index]
                 }
             })
